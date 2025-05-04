@@ -1,0 +1,68 @@
+#include <iostream>
+#include <set>
+using namespace std;
+
+class SetADT {
+    set<int> s;
+
+public:
+    void add(int x) {
+        s.insert(x);
+    }
+
+    void remove(int x) {
+        s.erase(x);
+    }
+
+    bool contains(int x) {
+        return s.find(x) != s.end();
+    }
+
+    int size() {
+        return s.size();
+    }
+
+    void display() {
+        cout << "Set: ";
+        for (int x : s) cout << x << " ";
+        cout << endl;
+    }
+
+    void unionSet(SetADT &other) {
+        set<int> result = s;
+        result.insert(other.s.begin(), other.s.end());
+        cout << "Union: ";
+        for (int x : result) cout << x << " ";
+        cout << endl;
+    }
+
+    void intersection(SetADT &other) {
+        cout << "Intersection: ";
+        for (int x : s) {
+            if (other.contains(x)) cout << x << " ";
+        }
+        cout << endl;
+    }
+
+    void difference(SetADT &other) {
+        cout << "Difference: ";
+        for (int x : s) {
+            if (!other.contains(x)) cout << x << " ";
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    SetADT a, b;
+    a.add(1); a.add(2); a.add(3);
+    b.add(2); b.add(3); b.add(4);
+
+    a.display();
+    b.display();
+    a.unionSet(b);
+    a.intersection(b);
+    a.difference(b);
+
+    return 0;
+}

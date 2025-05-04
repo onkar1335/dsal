@@ -1,0 +1,123 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+class Employee {
+public:
+    int id;
+    string name, designation;
+    float salary;
+
+    void input() {
+        cout << "Enter ID: "; cin >> id;
+        cout << "Enter Name: "; cin >> name;
+        cout << "Enter Designation: "; cin >> designation;
+        cout << "Enter Salary: "; cin >> salary;
+    }
+
+    void display() const {
+        cout << "ID: " << id << "\nName: " << name
+             << "\nDesignation: " << designation
+             << "\nSalary: " << salary << "\n";
+    }
+};
+
+// Add new employee
+void addEmployee() {
+    Employee emp;
+    emp.input();
+
+    ofstream data("employee.txt", ios::app);
+    ofstream index("index.txt", ios::app);
+
+    data << emp.id << " " << emp.name << " " << emp.designation << " " << emp.salary << endl;
+    index << emp.id << endl;
+
+    cout << "Employee added successfully!\n";
+}
+
+// Search for an employee by ID
+void searchEmployee(int targetId) {
+    ifstream data("employee.txt");
+    Employee emp;
+    bool found = false;
+
+    while (data >> emp.id >> emp.name >> emp.designation >> emp.salary) {
+        if (emp.id == targetId) {
+            cout << "Employee Found:\n";
+            emp.display();
+            found = true;
+            break;
+        }
+    }
+
+    if (!found)
+        cout << "Employee with ID " << targetId << " not found.\n";
+}
+
+// Delete employee by copying all others
+void deleteEmployee(int targetId) {
+    ifstream data("employee.txt");
+    ofstream temp("temp.txt");
+    Employee emp;
+    bool found = false;
+
+    while (data >> emp.id >> emp.name >> emp.designation >> emp.salary) {
+        if (emp.id != targetId)
+            temp << emp.id << " " << emp.name << " " << emp.designation << " " << emp.salary << endl;
+        else
+            found = true;
+    }
+
+    data.close();
+    temp.close();
+    remove("employee.txt");
+    rename("temp.txt", "employee.txt");
+
+    // Update index
+    ifstream idx("index.txt");
+    ofstream tempIdx("tempidx.txt");
+    int id;
+    while (idx >> id) {
+        if (id != targetId)
+            tempIdx << id << endl;
+    }
+
+    idx.close();
+    tempIdx.close();
+    remove("index.txt");
+    rename("tempidx.txt", "index.txt");
+
+    if (found)
+        cout << "Employee deleted successfully.\n";
+    else
+        cout << "Employee ID not found.\n";
+}
+
+int main() {
+    int choice;
+    do {
+        cout << "\n--- Employee Information System ---\n";
+        cout << "1. Add Employee\n2. Search Employee\n3. Delete Employee\n4. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        if (choice == 1)
+            addEmployee();
+        else if (choice == 2) {
+            int id;
+            cout << "Enter Employee ID to search: ";
+            cin >> id;
+            searchEmployee(id);
+        }
+        else if (choice == 3) {
+            int id;
+            cout << "Enter Employee ID to delete: ";
+            cin >> id;
+            deleteEmployee(id);
+        }
+    } while (choice != 4);
+
+    return 0;
+}

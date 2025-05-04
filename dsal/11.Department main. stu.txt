@@ -1,0 +1,43 @@
+#include <fstream>
+#include <iostream>
+using namespace std;
+
+class Student {
+public:
+    int roll;
+    string name, division, address;
+
+    void input() {
+        cout << "Roll No: "; cin >> roll;
+        cout << "Name: "; cin >> name;
+        cout << "Division: "; cin >> division;
+        cout << "Address: "; cin >> address;
+    }
+
+    void display() {
+        cout << roll << "\t" << name << "\t" << division << "\t" << address << "\n";
+    }
+};
+
+void addStudent() {
+    Student s;
+    s.input();
+    ofstream out("students.txt", ios::app);
+    out << s.roll << " " << s.name << " " << s.division << " " << s.address << endl;
+    out.close();
+}
+
+void searchStudent(int roll) {
+    ifstream in("students.txt");
+    Student s;
+    bool found = false;
+    while (in >> s.roll >> s.name >> s.division >> s.address) {
+        if (s.roll == roll) {
+            s.display();
+            found = true;
+            break;
+        }
+    }
+    if (!found) cout << "Student not found.\n";
+    in.close();
+}

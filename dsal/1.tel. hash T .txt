@@ -1,0 +1,78 @@
+#include <iostream>
+#include <list>
+#include <string>
+using namespace std;
+
+const int SIZE = 10;
+
+class HashTable {
+    list<pair<string, string>> table[SIZE];
+
+    int hashFunction(string name) {
+        int sum = 0;
+        for (char c : name)
+            sum += c;
+        return sum % SIZE;
+    }
+
+public:
+    void insert(string name, string phone) {
+        int index = hashFunction(name);
+        table[index].push_back({name, phone});
+    }
+
+    void search(string name) {
+        int index = hashFunction(name);
+        for (auto &p : table[index]) {
+            if (p.first == name) {
+                cout << "Phone number of " << name << ": " << p.second << endl;
+                return;
+            }
+        }
+        cout << "Contact not found.\n";
+    }
+};
+
+int main() {
+    HashTable ht;
+    int choice;
+    string name, phone;
+
+    do {
+        cout << "\n--- Telephone Book Menu ---\n";
+        cout << "1. Insert N Contacts\n";
+        cout << "2. Search Contact\n";
+        cout << "3. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1: {
+            int n;
+            cout << "How many contacts do you want to add? ";
+            cin >> n;
+            for (int i = 0; i < n; i++) {
+                cout << "Enter name " << i + 1 << ": ";
+                cin >> name;
+                cout << "Enter phone number: ";
+                cin >> phone;
+                ht.insert(name, phone);
+            }
+            cout << "All contacts added successfully.\n";
+            break;
+        }
+        case 2:
+            cout << "Enter name to search: ";
+            cin >> name;
+            ht.search(name);
+            break;
+        case 3:
+            cout << "Exiting program.\n";
+            break;
+        default:
+            cout << "Invalid choice. Try again.\n";
+        }
+    } while (choice != 3);
+
+    return 0;
+}

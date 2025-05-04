@@ -1,0 +1,76 @@
+#include <iostream>
+#include <vector>
+#include <limits>
+using namespace std;
+
+#define INF 99999
+
+class MST {
+    int n; // Number of cities
+    vector<string> cities;
+    vector<vector<int>> cost;
+
+public:
+    void createGraph() {
+        cout << "Enter number of cities: ";
+        cin >> n;
+
+        cities.resize(n);
+        cost.assign(n, vector<int>(n, 0));
+
+        cout << "Enter city names:\n";
+        for (int i = 0; i < n; i++) {
+            cout << "City " << i << ": ";
+            cin >> cities[i];
+        }
+
+        cout << "\nEnter cost between cities (0 if no direct connection):\n";
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                cout << "Cost between " << cities[i] << " and " << cities[j] << ": ";
+                cin >> cost[i][j];
+                cost[j][i] = cost[i][j];  // Undirected graph
+            }
+        }
+    }
+
+    void primMST() {
+        vector<bool> selected(n, false);
+        selected[0] = true;  // Start from city 0
+        int totalCost = 0;
+
+        cout << "\nMinimum Cost Phone Line Connections:\n";
+
+        for (int edges = 0; edges < n - 1; edges++) {
+            int min = INF;
+            int x = -1, y = -1;
+
+            for (int i = 0; i < n; i++) {
+                if (selected[i]) {
+                    for (int j = 0; j < n; j++) {
+                        if (!selected[j] && cost[i][j] && cost[i][j] < min) {
+                            min = cost[i][j];
+                            x = i;
+                            y = j;
+                        }
+                    }
+                }
+            }
+
+            if (x != -1 && y != -1) {
+                cout << cities[x] << " - " << cities[y] << " : " << cost[x][y] << endl;
+                totalCost += cost[x][y];
+                selected[y] = true;
+            }
+        }
+
+        cout << "Total Minimum Cost: " << totalCost << endl;
+    }
+};
+
+int main() {
+    MST m;
+    m.createGraph();
+    m.primMST();
+    return 0;
+}

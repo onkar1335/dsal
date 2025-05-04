@@ -1,0 +1,121 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+
+class Graph {
+    int n;  // Number of cities
+    vector<string> cities;
+    vector<vector<int>> adjMatrix;
+    vector<vector<pair<int, int>>> adjList; // for adjacency list
+
+public:
+    void createGraph() {
+        cout << "Enter number of cities: ";
+        cin >> n;
+        cities.resize(n);
+        adjMatrix.assign(n, vector<int>(n, 0));
+        adjList.resize(n);
+
+        cout << "Enter city names:\n";
+        for (int i = 0; i < n; i++) {
+            cout << "City " << i << ": ";
+            cin >> cities[i];
+        }
+
+        int choice;
+        do {
+            int from, to, cost;
+            cout << "\nAdd flight details:";
+            cout << "\nFrom (city index 0 to " << n - 1 << "): "; cin >> from;
+            cout << "To (city index 0 to " << n - 1 << "): "; cin >> to;
+            cout << "Cost/Distance/Time: "; cin >> cost;
+
+            // Matrix
+            adjMatrix[from][to] = cost;
+
+            // List
+            adjList[from].push_back({to, cost});
+
+            cout << "Add more flights? (1 = Yes / 0 = No): ";
+            cin >> choice;
+
+        } while (choice == 1);
+    }
+
+    void displayMatrix() {
+        cout << "\nAdjacency Matrix:\n\t";
+        for (int i = 0; i < n; i++) cout << cities[i] << "\t";
+        cout << "\n";
+
+        for (int i = 0; i < n; i++) {
+            cout << cities[i] << "\t";
+            for (int j = 0; j < n; j++) {
+                cout << adjMatrix[i][j] << "\t";
+            }
+            cout << "\n";
+        }
+    }
+
+    void displayList() {
+        cout << "\nAdjacency List:\n";
+        for (int i = 0; i < n; i++) {
+            cout << cities[i] << " -> ";
+            for (auto p : adjList[i]) {
+                cout << cities[p.first] << "(" << p.second << ") ";
+            }
+            cout << endl;
+        }
+    }
+
+    // BFS to check connectivity
+    bool isConnected() {
+        vector<bool> visited(n, false);
+        queue<int> q;
+        q.push(0);
+        visited[0] = true;
+        int count = 1;
+
+        while (!q.empty()) {
+            int node = q.front(); q.pop();
+            for (auto p : adjList[node]) {
+                if (!visited[p.first]) {
+                    visited[p.first] = true;
+                    q.push(p.first);
+                    count++;
+                }
+            }
+        }
+
+        return (count == n);
+    }
+};
+
+int main() {
+    Graph g;
+    g.createGraph();
+
+    int option;
+    do {
+        cout << "\n--- Graph Menu ---\n";
+        cout << "1. Display Adjacency Matrix\n";
+        cout << "2. Display Adjacency List\n";
+        cout << "3. Check if Graph is Connected\n";
+        cout << "4. Exit\n";
+        cout << "Enter choice: ";
+        cin >> option;
+
+        switch (option) {
+        case 1: g.displayMatrix(); break;
+        case 2: g.displayList(); break;
+        case 3:
+            if (g.isConnected()) cout << "The graph is connected.\n";
+            else cout << "The graph is NOT connected.\n";
+            break;
+        case 4: cout << "Exiting...\n"; break;
+        default: cout << "Invalid choice!\n";
+        }
+    } while (option != 4);
+
+    return 0;
+}
